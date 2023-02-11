@@ -23,29 +23,33 @@ const useKeyboard = () => {
     });
   });
 
-  useKey(" ", () => {
-    setGame((prev) => {
-      if (prev.isEnding) {
-        resetGameState();
-        // return { ...DefaultGameState, isStart: true, state: "playing" };
-      }
+  useKey(
+    " ",
+    () => {
+      setGame((prev) => {
+        if (prev.isEnding) {
+          resetGameState();
+        }
 
-      if (!prev.isStart) {
-        return {
-          isStart: true,
-          state: "playing",
-        };
-      }
+        if (!prev.isStart) {
+          return {
+            isStart: true,
+            state: "playing",
+          };
+        }
 
-      if (prev.isStart) {
-        return {
-          state: prev.state === "pause" ? "playing" : "pause",
-        };
-      }
+        if (prev.isStart) {
+          return {
+            state: prev.state === "pause" ? "playing" : "pause",
+          };
+        }
 
-      return prev;
-    });
-  });
+        return prev;
+      });
+    },
+    {},
+    [canvas]
+  );
 };
 
 export default useKeyboard;

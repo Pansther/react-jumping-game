@@ -27,10 +27,8 @@ const GameCanvas = () => {
   const isPause = state === "pause";
 
   const setInitialCanvas = useCallback(() => {
-    if (!canvasRef?.current) return;
-
-    setCanvas(canvasRef?.current?.getContext("2d"));
-  }, []);
+    setCanvas(canvasRef?.current?.getContext("2d") ?? null);
+  }, [canvasRef.current]);
 
   useEffect(() => {
     setInitialCanvas();
