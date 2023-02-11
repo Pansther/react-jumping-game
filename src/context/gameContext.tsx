@@ -1,23 +1,30 @@
 import { createContext, useContext, useState } from "react";
 import { useSetState } from "react-use";
 
-export type CanvasType = CanvasRenderingContext2D | null;
-
-export interface PlayerStateType {
-  isJumping: boolean;
-  isOnPlatform: boolean;
-  position: { x: number; y: number };
-}
+import {
+  DefaultPlayerState,
+  type PlayerStateType,
+} from "../types/player.model";
+import {
+  DefaultObstacleState,
+  type ObstacleStateType,
+} from "../types/obstacle.model";
+import type { CanvasType } from "../types/canvas.model";
+import type { SetStateType } from "../types/utils.model";
+import { type GameStateType, DefaultGameState } from "../types/game.model";
 
 export type CanvasStateType = [
-  { player: PlayerStateType; canvas: CanvasType },
   {
-    setPlayer: (
-      state:
-        | Partial<PlayerStateType>
-        | ((prev: PlayerStateType) => Partial<PlayerStateType>)
-    ) => void;
+    canvas: CanvasType;
+    game: GameStateType;
+    player: PlayerStateType;
+    obstacle: ObstacleStateType;
+  },
+  {
     setCanvas: (state: CanvasType) => void;
+    setGame: SetStateType<GameStateType>;
+    setPlayer: SetStateType<PlayerStateType>;
+    setObstacle: SetStateType<ObstacleStateType>;
   }
 ];
 
@@ -34,17 +41,16 @@ export interface UseCanvasProps {
 
 const GameProvider = ({ children }: UseCanvasProps) => {
   const [canvas, setCanvas] = useState<CanvasType>(null);
-  const [player, setPlayer] = useSetState<PlayerStateType>({
-    isJumping: false,
-    isOnPlatform: false,
-    position: { x: 0, y: 0 },
-  });
+  const [game, setGame] = useSetState<GameStateType>(DefaultGameState);
+  const [player, setPlayer] = useSetState<PlayerStateType>(DefaultPlayerState);
+  const [obstacle, setObstacle] =
+    useSetState<ObstacleStateType>(DefaultObstacleState);
 
   return (
     <GameContext.Provider
       value={[
-        { player, canvas },
-        { setCanvas, setPlayer },
+        { game, player, canvas, obstacle },
+        { setGame, setCanvas, setPlayer, setObstacle },
       ]}
     >
       {children}

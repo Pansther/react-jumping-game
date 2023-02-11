@@ -1,26 +1,58 @@
-import React, { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import cx from "clsx";
 
 import { useGameContext } from "../../context/gameContext";
 
 import styles from "./index.module.scss";
 
+const getLabelText = (
+  isStart: boolean,
+  isEnding: boolean,
+  isPause: boolean
+) => {
+  if (!isStart) return `PRESS "SPACE" TO START`;
+  if (isEnding) return `PRESS "SPACE" TO RE-START`;
+  if (isPause) return `PRESS "SPACE" TO CONTINUE`;
+};
+
 const GameCanvas = () => {
-  const [, { setCanvas }] = useGameContext();
+  const [
+    {
+      game: { isStart, isEnding, state, score },
+    },
+    { setCanvas },
+  ] = useGameContext();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {
+  const isPause = state === "pause";
+
+  const setInitialCanvas = useCallback(() => {
     if (!canvasRef?.current) return;
 
     setCanvas(canvasRef?.current?.getContext("2d"));
   }, []);
 
+  useEffect(() => {
+    setInitialCanvas();
+  }, []);
+
   return (
-    <canvas
-      width={600}
-      height={400}
-      ref={canvasRef}
-      className={styles.canvas}
-    />
+    <div className={styles.game_container}>
+      <div
+        className={cx(styles.label, {
+          [styles.hidden]: isStart && !isEnding && !isPause,
+        })}
+      >
+        {getLabelText(isStart, isEnding, isPause)}
+      </div>
+      <div className={styles.score}>{score}</div>
+      <canvas
+        width={600}
+        height={400}
+        ref={canvasRef}
+        className={styles.canvas}
+      />
+    </div>
   );
 };
 
